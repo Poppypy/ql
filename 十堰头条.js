@@ -1,347 +1,92 @@
-/**
- * 脚本地址: https://raw.githubusercontent.com/yml2213/javascript/master/sytt/sytt.js
- * 转载请留信息,谢谢
- *
- * 十堰头条
- *
- * cron 30 6 * * *  yml2213_javascript_master/sytt.js
- *
- * 3-17   完成签到、评论、分享、回帖 任务
- * 5-22   听说黑号也能提现了   自己试试吧
- *
- * 感谢所有测试人员
- * ========= 青龙--配置文件 =========
- * 变量格式: export sytt_data='手机号 & 密码'  多个账号用 @ 或者 换行分割
- *
- * 神秘代码: aHR0cHM6Ly90Lm1lL3ltbF90Zw==
- */
+/*
+cron 8 7 * * * yml_javascript/sytt.js
 
-const $ = new Env("十堰头条");
-const notify = $.isNode() ? require("./sendNotify") : "";
-const Notify = 1 		//0为关闭通知，1为打开通知,默认为1
-const debug = 0 		//0为关闭调试，1为打开调试,默认为0
-///////////////////////////////////////////////////////////////////
-let ckStr = process.env.sytt_data;
-let msg = "";
-let ck = "";
-let uid = '';
+软件名称：十堰头条
+下载地址：http://appx.10yan.com.cn/appshare/
+或者自己搜索下载
+3-17   完成签到、评论、分享、回帖 任务
+感谢所有测试人员
 
-///////////////////////////////////////////////////////////////////
-let Version = '\nyml   2022/5/23     老毛复活'
-let thank = `感谢 心雨 的投稿`
-let test = `脚本测试中,有bug及时反馈!     脚本测试中,有bug及时反馈!`
+自行安装  axios  qs  依赖；  自行安装 axios  qs  依赖；  自行安装  axios  qs  依赖；
+青龙直接node中安装就行
 
-///////////////////////////////////////////////////////////////////
+注意事项 ： 一定要仔细阅读一下内容
+=============青龙变量格式=============
+export yml_sytt_data='手机号&密码'
+ 多账号使用 @ 分割；
 
-async function tips(ckArr) {
+=============青龙变量实例=============
+我觉得已经不需要例子了 填上账号密码再不回那就别薅羊毛了吧
+=============变量解释==========
+手机号 密码 填入自己的数据就行
+=============变量获取==========
+懒得写了，自己研究吧
+不会的请百度或者群里求助：QQ群：1001401060  tg：https://t.me/yml_tg
 
-    console.log(`${Version}`);
-    msg += `${Version}`
+*/
+const axios = require("axios");
+const qs = require("qs");
+const $ = new Env('十堰头条');
+const notify = $.isNode() ? require('./sendNotify') : '';
+let app_yml_sytt_data='';
+let user = '';
+let pwd = '';
+let uid;
 
-    // console.log(thank);
-    // msg += `${thank}`
-
-    // console.log(test);
-    // msg += `${test}`
-
-    // console.log(`\n 脚本已恢复正常状态,请及时更新! `);
-    // msg += `脚本已恢复正常状态,请及时更新`
-
-    console.log(`==================================================\n 脚本执行 - 北京时间(UTC+8): ${new Date(
-        new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000
-    ).toLocaleString()} \n==================================================`);
-    await wyy();
-
-    console.log(`\n=================== 共找到 ${ckArr.length} 个账号 ===================`);
-    debugLog(`【debug】 这是你的账号数组:\n ${ckArr}`);
-}
 
 !(async () => {
-    let ckArr = await getCks(ckStr, "sytt_data");
-    await tips(ckArr);
-    for (let index = 0; index < ckArr.length; index++) {
-        let num = index + 1;
-        console.log(`------------- 开始【第 ${num} 个账号】-------------`);
-
-        ck = ckArr[index].split("&");
-
-        debugLog(`【debug】 这是你第 ${num} 账号信息:\n ${ck}`);
-        await start();
+    if ($.isNode()) {
+        //$.isNode()环境执行部分  青龙执行
+        if (!process.env.yml_sytt_data) {
+            console.log(`\n【${$.name}】：未填写相应变量 yml_sytt_data`);
+            return;
+        }
+        if (process.env.yml_sytt_data && process.env.yml_sytt_data.indexOf('@') > -1) {
+            app_yml_sytt_data = process.env.yml_sytt_data.split('@');
+        }else {
+            app_yml_sytt_data = process.env.yml_sytt_data.split();
+        }
     }
-    await SendMsg(msg);
+
+    console.log(`-------- 共 ${app_yml_sytt_data.length} 个账号 --------`)
+    // console.log(app_yml_sytt_data)
+    console.log(
+        `\n\n====== 脚本执行 - 北京时间(UTC+8)：${new Date(
+            new Date().getTime() +
+            new Date().getTimezoneOffset() * 60 * 1000 +
+            8 * 60 * 60 * 1000
+        ).toLocaleString()} ======\n`);
+
+
+    await wyy();
+
+    for (i = 0; i < app_yml_sytt_data.length; i++) {
+        $.index = i + 1;
+        console.log(`\n====== 开始【第 ${$.index} 个账号】======`)
+        // console.log(`这里是分割后:${app_yml_sytt_data}`);
+        data = app_yml_sytt_data[i].split('&');
+        // console.log(`====== ${data}`)
+        user = data[0]
+        // console.log(`====user==== ${user}`)
+        pwd = data[1]
+        // console.log(`====pwd==== ${pwd}`)
+
+        //执行任务
+        await syttdl();
+        await $.wait(2 * 1000);
+        await syttqd();
+        await $.wait(2 * 1000);
+        await plid();
+        await $.wait(2 * 1000);
+        await fxwz();
+        await $.wait(2 * 1000);
+        await tzid();
+        await $.wait(2 * 1000);
+    }
+
 })()
     .catch((e) => $.logErr(e))
-    .finally(() => $.done());
-
-
-async function start() {
-
-
-    console.log("开始 登录");
-    await login();
-    await $.wait(3 * 1000);
-
-    console.log("开始 收益查询");
-    await user_info();
-    await $.wait(3 * 1000);
-
-    console.log("开始 签到");
-    await gosign();
-    await $.wait(3 * 1000);
-
-    for (let m = 1; m < 4; m++) {
-        console.log(`开始 第 ${m} 次分享领红包`)
-        await share();
-        await $.wait(5 * 1000);
-    }
-
-}
-
-
-/**
- * 登录    httpPost
- */
-async function login() {
-    let url = {
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Loginv3/signInv3&password=${ck[1]}&username=${ck[0]}`,
-        headers: {},
-        body: '',
-    };
-    let result = await httpPost(url, `登录`);
-
-    if (result.code == "200") {
-        console.log(`\n   登录: ${result.retinfo} ✅ `);
-        msg += `\n   登录: ${result.retinfo} ✅ `;
-        uid = result.data.uid;
-    } else {
-        console.log(`\n   登录: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n    登录: 失败 ❌ 了呢,原因未知!`;
-        throw new Error(`${$.name}:喂  喂 ---  登录失败了,别睡了, 起来更新了喂!`);
-    }
-}
-
-
-
-
-/**
- * 查询收益    httpGet
- */
-async function user_info() {
-    let url = {
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/minemonetotal&id=5&uid=${uid}&source=android&ver=6.2.3&build=145`,
-        headers: '',
-        // body: '',
-    };
-    let result = await httpGet(url, `查询收益`);
-
-    if (result.code == "200") {
-        console.log(`\n   查询收益:今日收益${result.data.todaymoney}, 累计收益${result.data.totalmoney} ,待提现 ${result.data.cashmoney}   💪🏻 `);
-        msg += `\n   查询收益:今日收益${result.data.todaymoney}, 累计收益${result.data.totalmoney} ,待提现 ${result.data.cashmoney}   💪🏻 `;
-    } else {
-        console.log(`\n   查询收益: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n    查询收益: 失败 ❌ 了呢,原因未知!`;
-    }
-}
-
-
-
-/**
- * 签到    httpGet
- */
-async function gosign() {
-    let url = {
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/sign&uid=${uid}&source=android&ver=6.2.3&build=145`,
-        headers: '',
-        // body: '',
-    };
-    let result = await httpGet(url, `签到`);
-
-    if (result.code == "200") {
-        console.log(`\n   签到: ${result.retinfo} ,获得 ${result.money} 元`);
-        msg += `\n   签到: ${result.retinfo} ,获得 ${result.money}  元`;
-    } else if (result.code == "400") {
-        console.log(`\n   签到: ${result.retinfo} `);
-        msg += `\n   签到: ${result.retinfo}`;
-    } else {
-        console.log(`\n   签到: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n    签到: 失败 ❌ 了呢,原因未知!`;
-    }
-}
-
-
-/**
- * 分享领红包    httpGet
- */
-async function share() {
-    let num1 = randomInt(1, 100);
-    let url = {
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=${num1}&type=share&ver=6.2.3`,
-        headers: '',
-        // body: '',
-    };
-    let result = await httpGet(url, `分享领红包`);
-
-    if (result.code == "200") {
-        let num2 = randomInt(1, 19);
-        fxwzid = result.list[num2].contentid
-        // console.log(`\n   获取分享文章id=${fxwzid}`)
-        await fxwz1();
-    } else {
-        console.log(`\n   分享领红包: 失败 ❌ 了呢,原因未知！  ${result} `);
-        msg += `\n    分享领红包: 失败 ❌ 了呢,原因未知!`;
-    }
-}
-
-
-
-
-/**
- * 分享文章    httpGet
- */
-async function fxwz1() {
-    let url = {
-        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/getNewsShareTask&contentid=${fxwzid}&uid=${uid}&source=android&ver=6.2.3`,
-        headers: {},
-        // body: '',
-    };
-    let result = await httpGet(url, `分享文章`);
-    // console.log(result);
-    // if (result.code == "200") {
-    //     console.log(`\n   分享文章: ${result}`);
-    //     msg += `\n   分享文章: ${result}`;
-    // } else {
-    //     console.log(`\n   分享文章: 失败 ❌ 了呢,原因未知！  ${result} `);
-    //     msg += `\n    分享文章: 失败 ❌ 了呢,原因未知!`;
-    // }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//#region 固定代码
-// ============================================变量检查============================================ \\
-
-async function getCks(ck, str) {
-
-
-    return new Promise((resolve) => {
-
-        let ckArr = []
-        if (ck) {
-            if (ck.indexOf("@") !== -1) {
-
-                ck.split("@").forEach((item) => {
-                    ckArr.push(item);
-                });
-            } else if (ck.indexOf("\n") !== -1) {
-
-                ck.split("\n").forEach((item) => {
-                    ckArr.push(item);
-                });
-            } else {
-                ckArr.push(ck);
-            }
-            resolve(ckArr)
-        } else {
-            console.log(`\n 【${$.name}】：未填写变量 ${str}`)
-        }
-
-    }
-    )
-}
-
-// ============================================发送消息============================================ \\
-
-async function SendMsg(message) {
-    if (!message) return;
-
-    if (Notify > 0) {
-        if ($.isNode()) {
-            let notify = require("./sendNotify");
-            await notify.sendNotify($.name, message);
-        } else {
-            $.msg(message);
-        }
-    } else {
-        console.log(message);
-    }
-}
-
-/**
- * 随机数生成
- */
-
-function randomString(e) {
-    e = e || 32;
-    let t = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890",
-        a = t.length,
-        n = "";
-
-    for (i = 0; i < e; i++) n += t.charAt(Math.floor(Math.random() * a));
-    return n;
-}
-
-/**
- * 随机整数生成
- */
-
-function randomInt(min, max) {
-    return Math.round(Math.random() * (max - min) + min);
-}
-
-
-/**
- * 时间戳 13位
- */
-
-function ts13() {
-    return Math.round(new Date().getTime()).toString();
-}
-
-/**
- * 时间戳 10位
- */
-
-function ts10() {
-    return Math.round(new Date().getTime() / 1000).toString();
-}
-
-/**
- * 获取当前小时数
- */
-
-function local_hours() {
-    let myDate = new Date();
-    h = myDate.getHours();
-    return h;
-}
-
-/**
- * 获取当前分钟数
- */
-
-function local_minutes() {
-    let myDate = new Date();
-    m = myDate.getMinutes();
-    return m;
-}
+    .finally(() => $.done())
 
 
 //每日网抑云
@@ -353,187 +98,328 @@ function wyy(timeout = 3 * 1000) {
         $.get(url, async (err, resp, data) => {
             try {
                 data = JSON.parse(data)
-                console.log(`\n 【网抑云时间】: ${data.content}  by--${data.music}`);
+                $.log(`\n【网抑云时间】: ${data.content}  by--${data.music}`);
 
             } catch (e) {
                 $.logErr(e, resp);
             } finally {
                 resolve()
             }
-        }, timeout
-        )
+        }, timeout)
     })
 }
 
 
-// ============================================ get请求 ============================================ \\
-async function httpGet(getUrlObject, tip, timeout = 3 * 1000) {
+// 登录
+function syttdl(timeout = 0) {
+    urldl = `https://app.site.10yan.com.cn/index.php?s=/Api/Loginv3/signInv3&password=${pwd}&username=${user}`
+    // console.log(urldl)
     return new Promise((resolve) => {
-        let url = getUrlObject;
-        if (!tip) {
-            let tmp = arguments.callee.toString();
-            let re = /function\s*(\w*)/i;
-            let matches = re.exec(tmp);
-            tip = matches[1];
+        let url = {
+            url: urldl,
+            headers: { } ,
+            body: '',
         }
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-            console.log(url);
-        }
-
-        $.get(
-            url,
-            async (err, resp, data) => {
-                try {
-                    if (debug) {
-                        console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-                        console.log(data);
-                        console.log(`======`);
-                        console.log(JSON.parse(data));
-                    }
-                    let result = JSON.parse(data);
-                    resolve(result);
-                } catch (e) {
-                    console.log(err, resp);
-                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    msg += `\n ${tip} 失败了!请稍后尝试!!`
-                } finally {
-                    resolve();
+        // console.log(url);
+        $.post(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出 登录 data开始===================`);
+                // console.log(data);
+                // console.log(`输出 登录 data结束===================`);
+                result = JSON.parse(data);
+                if (result.code == "200") {
+                    console.log(`登录用户： ${user}`)
+                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】登录状态: ${result.retinfo} ✅ `)
+                    // await $.wait(3 * 1000)
+                }else {
+                    $.log(`\n【🎉 恭喜个屁 🎉】登录状态:${result.retinfo} `)
                 }
-            },
-            timeout
-        );
-    });
+                uid = result.data.uid
+                console.log(`这是你的用户id：uid=${uid}`)
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
 }
 
-// ============================================ post请求 ============================================ \\
-async function httpPost(postUrlObject, tip, timeout = 3 * 1000) {
+// 签到
+function syttqd(timeout = 0) {
     return new Promise((resolve) => {
-        let url = postUrlObject;
-        if (!tip) {
-            let tmp = arguments.callee.toString();
-            let re = /function\s*(\w*)/i;
-            let matches = re.exec(tmp);
-            tip = matches[1];
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/sign&uid=${uid}&source=android&ver=6.2.3&build=145`,
+            headers:'',
         }
-        if (debug) {
-            console.log(`\n 【debug】=============== 这是 ${tip} 请求 url ===============`);
-            console.log(url);
-        }
-
-        $.post(
-            url,
-            async (err, resp, data) => {
-                try {
-                    if (debug) {
-                        console.log(`\n\n 【debug】===============这是 ${tip} 返回data==============`);
-                        console.log(data);
-                        console.log(`======`);
-                        console.log(JSON.parse(data));
-                    }
-                    let result = JSON.parse(data);
-                    resolve(result);
-                } catch (e) {
-                    console.log(err, resp);
-                    console.log(`\n ${tip} 失败了!请稍后尝试!!`);
-                    msg += `\n ${tip} 失败了!请稍后尝试!!`
-                } finally {
-                    resolve();
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`========输出签到 data开始===========`);
+                // console.log(data);
+                // console.log(`========输出签到 data结束=========`);
+                result = JSON.parse(data);
+                if (result.code == 200) {
+                    $.log(`\n【🎉🎉🎉 恭喜您鸭 🎉🎉🎉】签到状态:(${result.retinfo}) ,获得 ${result.money}  ✅ `)
+                    // await $.wait(3 * 1000)
+                } else if (result.code == 400) {
+                    $.log(`\n【🎉 恭喜个屁 🎉】签到状态: ${result.retinfo}`)
+                }else {
+                    $.log(`\n【🎉 恭喜个屁 🎉】执行签到:失败 ❌ 了呢,原因未知! `)
                 }
-            },
-            timeout
-        );
-    });
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
 }
 
-
-// ============================================ debug调试 ============================================ \\
-function debugLog(...args) {
-    if (debug) {
-        console.log(...args);
-    }
-}
-
-//#endregion
-function MD5Encrypt(a) {
-    function b(a, b) {
-        return a << b | a >>> 32 - b
-    }
-
-    function c(a, b) {
-        var c, d, e, f, g;
-        return e = 2147483648 & a, f = 2147483648 & b, c = 1073741824 & a, d = 1073741824 & b, g = (1073741823 & a) + (1073741823 & b), c & d ? 2147483648 ^ g ^ e ^ f : c | d ? 1073741824 & g ? 3221225472 ^ g ^ e ^ f : 1073741824 ^ g ^ e ^ f : g ^ e ^ f
-    }
-
-    function d(a, b, c) {
-        return a & b | ~a & c
-    }
-
-    function e(a, b, c) {
-        return a & c | b & ~c
-    }
-
-    function f(a, b, c) {
-        return a ^ b ^ c
-    }
-
-    function g(a, b, c) {
-        return b ^ (a | ~c)
-    }
-
-    function h(a, e, f, g, h, i, j) {
-        return a = c(a, c(c(d(e, f, g), h), j)), c(b(a, i), e)
-    }
-
-    function i(a, d, f, g, h, i, j) {
-        return a = c(a, c(c(e(d, f, g), h), j)), c(b(a, i), d)
-    }
-
-    function j(a, d, e, g, h, i, j) {
-        return a = c(a, c(c(f(d, e, g), h), j)), c(b(a, i), d)
-    }
-
-    function k(a, d, e, f, h, i, j) {
-        return a = c(a, c(c(g(d, e, f), h), j)), c(b(a, i), d)
-    }
-
-    function l(a) {
-        for (var b, c = a.length, d = c + 8, e = (d - d % 64) / 64, f = 16 * (e + 1), g = new Array(f - 1), h = 0, i = 0; c > i;) b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | a.charCodeAt(i) << h, i++;
-        return b = (i - i % 4) / 4, h = i % 4 * 8, g[b] = g[b] | 128 << h, g[f - 2] = c << 3, g[f - 1] = c >>> 29, g
-    }
-
-    function m(a) {
-        var b, c, d = "", e = "";
-        for (c = 0; 3 >= c; c++) b = a >>> 8 * c & 255, e = "0" + b.toString(16), d += e.substr(e.length - 2, 2);
-        return d
-    }
-
-    function n(a) {
-        a = a.replace(/\r\n/g, "\n");
-        for (var b = "", c = 0; c < a.length; c++) {
-            var d = a.charCodeAt(c);
-            128 > d ? b += String.fromCharCode(d) : d > 127 && 2048 > d ? (b += String.fromCharCode(d >> 6 | 192), b += String.fromCharCode(63 & d | 128)) : (b += String.fromCharCode(d >> 12 | 224), b += String.fromCharCode(d >> 6 & 63 | 128), b += String.fromCharCode(63 & d | 128))
+//  评论任务部分
+// 评论id
+function plid(timeout = 0) {
+    // 获取文章id
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=1&type=reply&source=android`,
+            headers: {},
         }
-        return b
-    }
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出 data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+                result = JSON.parse(data);
+                for (let l = 0; l < 3; l++) {
+                    // console.log(`我是l===== ${l}`)
+                    wzid = result.list[l].contentid
+                    console.log(`获取评论文章id=${wzid}`)
+                    console.log(`开始发布评论`)
+                    await fbpl();
+                    console.log(`延迟5秒`)
+                    await $.wait(5 * 1000);
+                    console.log(`删除评论`)
+                    await hqplid();
+                    console.log(`\n`)
+                }
 
-    var o, p, q, r, s, t, u, v, w, x = [], y = 7, z = 12, A = 17, B = 22, C = 5, D = 9, E = 14, F = 20, G = 4, H = 11,
-        I = 16, J = 23, K = 6, L = 10, M = 15, N = 21;
-    for (a = n(a), x = l(a), t = 1732584193, u = 4023233417, v = 2562383102, w = 271733878, o = 0; o < x.length; o += 16) p = t, q = u, r = v, s = w, t = h(t, u, v, w, x[o + 0], y, 3614090360), w = h(w, t, u, v, x[o + 1], z, 3905402710), v = h(v, w, t, u, x[o + 2], A, 606105819), u = h(u, v, w, t, x[o + 3], B, 3250441966), t = h(t, u, v, w, x[o + 4], y, 4118548399), w = h(w, t, u, v, x[o + 5], z, 1200080426), v = h(v, w, t, u, x[o + 6], A, 2821735955), u = h(u, v, w, t, x[o + 7], B, 4249261313), t = h(t, u, v, w, x[o + 8], y, 1770035416), w = h(w, t, u, v, x[o + 9], z, 2336552879), v = h(v, w, t, u, x[o + 10], A, 4294925233), u = h(u, v, w, t, x[o + 11], B, 2304563134), t = h(t, u, v, w, x[o + 12], y, 1804603682), w = h(w, t, u, v, x[o + 13], z, 4254626195), v = h(v, w, t, u, x[o + 14], A, 2792965006), u = h(u, v, w, t, x[o + 15], B, 1236535329), t = i(t, u, v, w, x[o + 1], C, 4129170786), w = i(w, t, u, v, x[o + 6], D, 3225465664), v = i(v, w, t, u, x[o + 11], E, 643717713), u = i(u, v, w, t, x[o + 0], F, 3921069994), t = i(t, u, v, w, x[o + 5], C, 3593408605), w = i(w, t, u, v, x[o + 10], D, 38016083), v = i(v, w, t, u, x[o + 15], E, 3634488961), u = i(u, v, w, t, x[o + 4], F, 3889429448), t = i(t, u, v, w, x[o + 9], C, 568446438), w = i(w, t, u, v, x[o + 14], D, 3275163606), v = i(v, w, t, u, x[o + 3], E, 4107603335), u = i(u, v, w, t, x[o + 8], F, 1163531501), t = i(t, u, v, w, x[o + 13], C, 2850285829), w = i(w, t, u, v, x[o + 2], D, 4243563512), v = i(v, w, t, u, x[o + 7], E, 1735328473), u = i(u, v, w, t, x[o + 12], F, 2368359562), t = j(t, u, v, w, x[o + 5], G, 4294588738), w = j(w, t, u, v, x[o + 8], H, 2272392833), v = j(v, w, t, u, x[o + 11], I, 1839030562), u = j(u, v, w, t, x[o + 14], J, 4259657740), t = j(t, u, v, w, x[o + 1], G, 2763975236), w = j(w, t, u, v, x[o + 4], H, 1272893353), v = j(v, w, t, u, x[o + 7], I, 4139469664), u = j(u, v, w, t, x[o + 10], J, 3200236656), t = j(t, u, v, w, x[o + 13], G, 681279174), w = j(w, t, u, v, x[o + 0], H, 3936430074), v = j(v, w, t, u, x[o + 3], I, 3572445317), u = j(u, v, w, t, x[o + 6], J, 76029189), t = j(t, u, v, w, x[o + 9], G, 3654602809), w = j(w, t, u, v, x[o + 12], H, 3873151461), v = j(v, w, t, u, x[o + 15], I, 530742520), u = j(u, v, w, t, x[o + 2], J, 3299628645), t = k(t, u, v, w, x[o + 0], K, 4096336452), w = k(w, t, u, v, x[o + 7], L, 1126891415), v = k(v, w, t, u, x[o + 14], M, 2878612391), u = k(u, v, w, t, x[o + 5], N, 4237533241), t = k(t, u, v, w, x[o + 12], K, 1700485571), w = k(w, t, u, v, x[o + 3], L, 2399980690), v = k(v, w, t, u, x[o + 10], M, 4293915773), u = k(u, v, w, t, x[o + 1], N, 2240044497), t = k(t, u, v, w, x[o + 8], K, 1873313359), w = k(w, t, u, v, x[o + 15], L, 4264355552), v = k(v, w, t, u, x[o + 6], M, 2734768916), u = k(u, v, w, t, x[o + 13], N, 1309151649), t = k(t, u, v, w, x[o + 4], K, 4149444226), w = k(w, t, u, v, x[o + 11], L, 3174756917), v = k(v, w, t, u, x[o + 2], M, 718787259), u = k(u, v, w, t, x[o + 9], N, 3951481745), t = c(t, p), u = c(u, q), v = c(v, r), w = c(w, s);
-    var O = m(t) + m(u) + m(v) + m(w);
-    return O.toLowerCase()
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+}
+// 发布评论
+function fbpl(timeout = 0) {
+    let axios = require('axios')
+    axios
+        .post(`https://app.site.10yan.com.cn/index.php?s=/Api/Article/artReply/&actiontype=12&contentid=${wzid}&reply=good!&sessionid=801cf37e86eaa651914b3cac0c756f9a&title=%%E6%%88%%91%%E5%%B8%%82%%E4%%B8%%80%%E5%%BD%%A9%%E5%%8F%%8B%%E5%%88%%AE%%E4%%B8%%AD%%E2%%80%%9C%%E5%%A5%%BD%%E8%%BF%%90%%E5%%8D%%81%%E5%%80%%8D%%E2%%80%%9D%%E5%%A4%%B4%%E5%%A5%%9640%%E4%%B8%%87&uid=${uid}&source=android&build=145`, {
+        })
+        .then(res => {
+            // console.log(res.data)
+        })
+        .catch(error => {
+            console.error(error)
+        })
+}
+// 获取评论 rid 并 删除评论
+function hqplid(timeout = 0) {
+    let axios = require('axios');
+    let config = {
+        method: 'get',
+        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Article/index/&contentid=${wzid}&page=1&uid=${uid}`,
+        headers: { }
+    };
+    axios(config)
+        .then(function (response) {
+            // console.log(`===========`)
+            // console.log(JSON.stringify(response.data));
+            // pl_data =response.data.list
+            // console.log(pl_data)
+            for ( k = 0; k < response.data.list.length; k++) {
+                usid = response.data.list[k].userid;
+                // console.log(usid)
+                if (usid == `${uid}`) {
+                    // console.log(`====rid 开始=====`)
+                    // console.log(response.data.list[k].pid)
+                    // console.log(`=====rid 结束=====`)
+                    // rid = response.data.list[i].pid
+                    rid = response.data.list[k].pid
+                    // console.log(`我是 rid ${rid}`)
+
+                    // 删除评论
+                    let axios = require('axios');
+                    let qs = require('qs');
+                    let data = qs.stringify({
+                        'rid': `${rid}`,
+                        'uid': `${uid}`,
+                        // 'source': 'android',
+                        'ver': '6.2.3',
+                        'build': '145'
+                    });
+                    let config = {
+                        method: 'post',
+                        url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Article/delReply/',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data : data
+                    };
+
+                    axios(config)
+                        .then(function (response) {
+                            // console.log(JSON.stringify(response.data));
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                }
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 }
 
+// 分享任务部分
+// 分享
+function fxwz(timeout = 0) {
+    // 获取分享文章列表 id
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Newsv4/newslist&page=1&type=share&ver=6.2.3`,
+            headers: {},
+        }
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出 data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+                result = JSON.parse(data);
+                for (let m = 0; m < 3; m++) {
+                    // console.log(`我是m===== ${m}`)
+                    fxwzid = result.list[m].contentid
+                    console.log(`获取分享文章id=${fxwzid}`)
+                    console.log(`开始分享文章`)
+                    await fxwz1();
+                    console.log(`延迟5秒`)
+                    await $.wait(5 * 1000);
+                    console.log(`\n`)
+                }
+
+            } catch (e) {
+                $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+}
+
+// 文章分享调用函数
+function fxwz1(timeout = 0) {
+    let axios = require('axios');
+    let config = {
+        method: 'get',
+        url: `https://app.site.10yan.com.cn/index.php?s=/Api/Activityv1/getNewsShareTask&contentid=${fxwzid}&uid=${uid}&source=android&ver=6.2.3`,
+        headers: { }
+    };
+
+    axios(config)
+        .then(function (response) {
+            console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+}
+
+
+// 帖子id
+function tzid(timeout = 0) {
+    // 获取帖子 文章id
+    return new Promise((resolve) => {
+        let url = {
+            url: `https://app.site.10yan.com.cn/index.php?s=/Api/Dynamic&isrecommend=1&page=1&uid=${uid}`,
+            headers: {},
+        }
+        // console.log(url);
+        $.get(url, async (err, resp, data) => {
+            try {
+                // console.log(`输出data开始===================`);
+                // console.log(data);
+                // console.log(`输出data结束===================`);
+                result = JSON.parse(data);
+                for (let n = 0; n < 3; n++) {
+                    tzid1 = result.data[n].id
+                    console.log(`开始回帖：id=${tzid1}`)
+                    await tzpl();
+                    console.log(`延迟5秒`)
+                    await $.wait(5 * 1000);
+                    console.log(`\n`)
+                }
+
+            } catch (e) {
+                // $.logErr(e, resp);
+            } finally {
+                resolve()
+            }
+        }, timeout)
+
+    })
+}
+// 帖子发布评论
+function tzpl(timeout = 0) {
+    var axios = require('axios');
+    var data = `content=%E5%A4%AA%E6%BC%82%E4%BA%AE%E4%BA%86%E9%B8%AD&pid=${tzid1}&uid=${uid}&source=android&ver=6.2.3&build=145`
+    var config = {
+        method: 'post',
+        url: 'https://app.site.10yan.com.cn/index.php?s=/Api/Dynamic/reply',
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        data : data
+    };
+
+    axios(config)
+        .then(function (response) {
+            // console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
+}
+
+
+
+
+
+
+
+
+
+
+
+//固定板块，无需动
 function Env(t, e) {
-    "undefined" != typeof process && JSON.stringify(process.env).indexOf("GITHUB") > -1 && process.exit(0);
-
     class s {
         constructor(t) {
             this.env = t
         }
 
         send(t, e = "GET") {
-            t = "string" == typeof t ? { url: t } : t;
+            t = "string" == typeof t ? {url: t} : t;
             let s = this.get;
             return "POST" === e && (s = this.post), new Promise((e, i) => {
                 s.call(this, t, (t, s, r) => {
@@ -553,7 +439,7 @@ function Env(t, e) {
 
     return new class {
         constructor(t, e) {
-            this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `🔔${this.name}, 开始!`)
+            this.name = t, this.http = new s(this), this.data = null, this.dataFile = "box.dat", this.logs = [], this.isMute = !1, this.isNeedRewrite = !1, this.logSeparator = "\n", this.encoding = "utf-8", this.startTime = (new Date).getTime(), Object.assign(this, e), this.log("", `\ud83d\udd14${this.name}, \u5f00\u59cb!`)
         }
 
         isNode() {
@@ -570,6 +456,10 @@ function Env(t, e) {
 
         isLoon() {
             return "undefined" != typeof $loon
+        }
+
+        isShadowrocket() {
+            return "undefined" != typeof $rocket
         }
 
         toObj(t, e = null) {
@@ -608,7 +498,7 @@ function Env(t, e) {
 
         getScript(t) {
             return new Promise(e => {
-                this.get({ url: t }, (t, s, i) => e(i))
+                this.get({url: t}, (t, s, i) => e(i))
             })
         }
 
@@ -620,8 +510,8 @@ function Env(t, e) {
                 r = r ? 1 * r : 20, r = e && e.timeout ? e.timeout : r;
                 const [o, h] = i.split("@"), n = {
                     url: `http://${h}/v1/scripting/evaluate`,
-                    body: { script_text: t, mock_type: "cron", timeout: r },
-                    headers: { "X-Key": o, Accept: "*/*" }
+                    body: {script_text: t, mock_type: "cron", timeout: r},
+                    headers: {"X-Key": o, Accept: "*/*"}
                 };
                 this.post(n, (t, e, i) => s(i))
             }).catch(t => this.logErr(t))
@@ -709,45 +599,50 @@ function Env(t, e) {
 
         get(t, e = (() => {
         })) {
-            t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon() ? (this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.get(t, (t, s, i) => {
+            if (t.headers && (delete t.headers["Content-Type"], delete t.headers["Content-Length"]), this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient.get(t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            })) : this.isQuanX() ? (this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-            }, t => e(t))) : this.isNode() && (this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
-                try {
-                    if (t.headers["set-cookie"]) {
-                        const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString();
-                        s && this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar
+            }); else if (this.isQuanX()) this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
+                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
+                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
+            }, t => e(t)); else if (this.isNode()) {
+                let s = require("iconv-lite");
+                this.initGotEnv(t), this.got(t).on("redirect", (t, e) => {
+                    try {
+                        if (t.headers["set-cookie"]) {
+                            const s = t.headers["set-cookie"].map(this.cktough.Cookie.parse).toString();
+                            s && this.ckjar.setCookieSync(s, null), e.cookieJar = this.ckjar
+                        }
+                    } catch (t) {
+                        this.logErr(t)
                     }
-                } catch (t) {
-                    this.logErr(t)
-                }
-            }).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
-            }, t => {
-                const { message: s, response: i } = t;
-                e(s, i, i && i.body)
-            }))
+                }).then(t => {
+                    const {statusCode: i, statusCode: r, headers: o, rawBody: h} = t;
+                    e(null, {status: i, statusCode: r, headers: o, rawBody: h}, s.decode(h, this.encoding))
+                }, t => {
+                    const {message: i, response: r} = t;
+                    e(i, r, r && s.decode(r.rawBody, this.encoding))
+                })
+            }
         }
 
         post(t, e = (() => {
         })) {
-            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, { "X-Surge-Skip-Scripting": !1 })), $httpClient.post(t, (t, s, i) => {
+            const s = t.method ? t.method.toLocaleLowerCase() : "post";
+            if (t.body && t.headers && !t.headers["Content-Type"] && (t.headers["Content-Type"] = "application/x-www-form-urlencoded"), t.headers && delete t.headers["Content-Length"], this.isSurge() || this.isLoon()) this.isSurge() && this.isNeedRewrite && (t.headers = t.headers || {}, Object.assign(t.headers, {"X-Surge-Skip-Scripting": !1})), $httpClient[s](t, (t, s, i) => {
                 !t && s && (s.body = i, s.statusCode = s.status), e(t, s, i)
-            }); else if (this.isQuanX()) t.method = "POST", this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, { hints: !1 })), $task.fetch(t).then(t => {
-                const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                e(null, { status: s, statusCode: i, headers: r, body: o }, o)
+            }); else if (this.isQuanX()) t.method = s, this.isNeedRewrite && (t.opts = t.opts || {}, Object.assign(t.opts, {hints: !1})), $task.fetch(t).then(t => {
+                const {statusCode: s, statusCode: i, headers: r, body: o} = t;
+                e(null, {status: s, statusCode: i, headers: r, body: o}, o)
             }, t => e(t)); else if (this.isNode()) {
+                let i = require("iconv-lite");
                 this.initGotEnv(t);
-                const { url: s, ...i } = t;
-                this.got.post(s, i).then(t => {
-                    const { statusCode: s, statusCode: i, headers: r, body: o } = t;
-                    e(null, { status: s, statusCode: i, headers: r, body: o }, o)
+                const {url: r, ...o} = t;
+                this.got[s](r, o).then(t => {
+                    const {statusCode: s, statusCode: r, headers: o, rawBody: h} = t;
+                    e(null, {status: s, statusCode: r, headers: o, rawBody: h}, i.decode(h, this.encoding))
                 }, t => {
-                    const { message: s, response: i } = t;
-                    e(s, i, i && i.body)
+                    const {message: s, response: r} = t;
+                    e(s, r, r && i.decode(r.rawBody, this.encoding))
                 })
             }
         }
@@ -771,24 +666,24 @@ function Env(t, e) {
         msg(e = t, s = "", i = "", r) {
             const o = t => {
                 if (!t) return t;
-                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? { "open-url": t } : this.isSurge() ? { url: t } : void 0;
+                if ("string" == typeof t) return this.isLoon() ? t : this.isQuanX() ? {"open-url": t} : this.isSurge() ? {url: t} : void 0;
                 if ("object" == typeof t) {
                     if (this.isLoon()) {
                         let e = t.openUrl || t.url || t["open-url"], s = t.mediaUrl || t["media-url"];
-                        return { openUrl: e, mediaUrl: s }
+                        return {openUrl: e, mediaUrl: s}
                     }
                     if (this.isQuanX()) {
                         let e = t["open-url"] || t.url || t.openUrl, s = t["media-url"] || t.mediaUrl;
-                        return { "open-url": e, "media-url": s }
+                        return {"open-url": e, "media-url": s}
                     }
                     if (this.isSurge()) {
                         let e = t.url || t.openUrl || t["open-url"];
-                        return { url: e }
+                        return {url: e}
                     }
                 }
             };
             if (this.isMute || (this.isSurge() || this.isLoon() ? $notification.post(e, s, i, o(r)) : this.isQuanX() && $notify(e, s, i, o(r))), !this.isMuteLog) {
-                let t = ["", "==============📣系统通知📣=============="];
+                let t = ["", "==============\ud83d\udce3\u7cfb\u7edf\u901a\u77e5\ud83d\udce3=============="];
                 t.push(e), s && t.push(s), i && t.push(i), console.log(t.join("\n")), this.logs = this.logs.concat(t)
             }
         }
@@ -799,7 +694,7 @@ function Env(t, e) {
 
         logErr(t, e) {
             const s = !this.isSurge() && !this.isQuanX() && !this.isLoon();
-            s ? this.log("", `❗️${this.name}, 错误!`, t.stack) : this.log("", `❗️${this.name}, 错误!`, t)
+            s ? this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t.stack) : this.log("", `\u2757\ufe0f${this.name}, \u9519\u8bef!`, t)
         }
 
         wait(t) {
@@ -808,7 +703,7 @@ function Env(t, e) {
 
         done(t = {}) {
             const e = (new Date).getTime(), s = (e - this.startTime) / 1e3;
-            this.log("", `🔔${this.name}, 结束! 🕛 ${s} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t)
+            this.log("", `\ud83d\udd14${this.name}, \u7ed3\u675f! \ud83d\udd5b ${s} \u79d2`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t)
         }
     }(t, e)
 }
