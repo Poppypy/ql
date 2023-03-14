@@ -7,6 +7,9 @@ cron 10 7 * * *  sbr.js
 12.24		改用 yml2213-utils 依赖
 
 ------------------------  青龙--配置文件-贴心复制区域  ---------------------- 
+token 抓 https://growrice.supor.com/rice/backend/public/index.php/api/login/auto-login  的包 , url 后面就是token
+cookie 抓 https://growrice.supor.com/rice/backend/public/index.php/api/users/get-user-info  的包 , header 中有cookie
+
 # 苏泊尔
 export sbr=" token & cookie @ token & cookie "
 
