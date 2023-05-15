@@ -3,7 +3,7 @@
 抓包：请求头里的X-Applet-Token
 请求头：admin.shunyi.wenming.city
 变量：export SYZX = 'XXXXXX'
-cron: 6 6 * * *;
+cron: 6 6 * * *
 
 const $ = new Env("顺义在线");
 */
