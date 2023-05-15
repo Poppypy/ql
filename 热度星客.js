@@ -3,7 +3,8 @@
 
 热度星客 一天0.1   一元提现秒到微信 实名同名即可
 
-
+cron: 0 9 * * *	
+const $ = new Env("热度星客");
 变量名reck
 
      扫码打开小程序后 抓包 m.reduxingke.com 域名
