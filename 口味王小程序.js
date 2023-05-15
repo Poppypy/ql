@@ -1,6 +1,7 @@
 /*
 口味王小程序
-
+cron: 0 12 * * *	
+const $ = new Env("口味王");
 脚本兼容:  Node.js
 ===================quantumultx================
 [task_local]
