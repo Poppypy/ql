@@ -17,7 +17,7 @@ http://ww5.91hzr.cn/i/k-4Y/1004297012.html?via=2&isreload=3
 脚本每日自动收取星钻
 两小时执行一次就可以
 
-cron: 0 12 * * *	
+cron: 0 7 * * *	
 const $ = new Env("乐玩星球");
 
 */
