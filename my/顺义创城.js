@@ -4,7 +4,7 @@
 请求头：admin.shunyi.wenming.city
 变量：export SY_token = 'XXXXXX'
 
-cron: 8 0 * * *;
+cron: 8 0 * * *
 const $ = new Env("顺义创城");
 
 */
