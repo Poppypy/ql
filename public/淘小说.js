@@ -13,7 +13,7 @@ export txsCookie='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx&12345678@yyyyyyyy-yyyy-yy
 重写：
 [task_local]
 #淘小说
-0,30 6-12,14-17,19-23 * * * https://raw.githubusercontent.com/leafxcy/JavaScript/main/txs.js, tag=淘小说, enabled=true
+cron:0,30 6-12,14-17,19-23 * * * https://raw.githubusercontent.com/leafxcy/JavaScript/main/txs.js, tag=淘小说, enabled=true
 [rewrite_local]
 /auth/interval_bonus url script-request-header https://raw.githubusercontent.com/leafxcy/JavaScript/main/txs.js
 [MITM]
