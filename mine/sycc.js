@@ -5,7 +5,7 @@ author:popy
 请求头：admin.shunyi.wenming.city
 变量：export SYCC = 'XXXXXX'
 7，11，19跑兑换
-cron: 7,11,19 59 * * *
+cron: 59 7,11,19 * * *
 const $ = new Env("顺义创城兑换")
 格式:token#手机号
 每天一两块钱
