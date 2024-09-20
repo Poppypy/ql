@@ -4,7 +4,7 @@
 请求头：admin.shunyi.wenming.city
 变量：export SYCC = 'XXXXXX'
 一天一次，美滋滋
-cron: 7 7 * * *;
+cron: 7 7 * * *
 const $ = new Env("顺义创城任务");
 
 */
