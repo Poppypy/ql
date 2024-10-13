@@ -1,5 +1,5 @@
 /*
-
+https://xy-monthly-sign-v2.weijuju.com/wx/index/channel1#/index
 cron: 0 0 7 * * *
 const $ = new Env("兴银理财签到")
 格式:
