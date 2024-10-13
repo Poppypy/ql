@@ -12,7 +12,7 @@ P_开头是我自己用的不用拉，O_开头是其他人写的，Y_开头是�
 
 ## 拉库命令
 '''
-ql repo https://github.com/Poppypy/ql.git "Y_*"
+ql repo https://github.com/Poppypy/ql.git "Y_*|O_"
 '''
 
 

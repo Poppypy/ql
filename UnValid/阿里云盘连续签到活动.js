@@ -1,9 +1,10 @@
 //阿里云盘连续签到活动
 //https://alist.nn.ci/zh/guide/drivers/aliyundrive.html 打开页面扫码获取refresh_token
 //环境变量:ALI_TOKEN,多账号用换行或@或&分隔
-
 const $ = API();
 let refresh_token = [];
+refresh_token='eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI1OTJjYjBjN2NkNWY0NzQzYWFhY2IwZjNlZDUxMTZhNyIsImF1ZCI6Ijc2OTE3Y2NjY2Q0NDQxYzM5NDU3YTA0ZjYwODRmYjJmIiwiZXhwIjoxNzM2NTk3NDQ4LCJpYXQiOjE3Mjg4MjE0NDgsImp0aSI6ImM0Y2Y1NjRkMjY4NzQ3NGNhYmUwMTJmN2I5NjA4MmNhIn0.jQtJKjfF_hZzcabLBt4Vfor_cdJe1GuwIFWFdBhFotgjEsFTMyhf8sJfIK-GYCX2-2Mx3I208dzQNmTGLBjpFw'
+
 let msg = [];
 !(async () => {
 
