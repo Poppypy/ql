@@ -1,5 +1,5 @@
 /*
-
+241105
 抓包：请求头里的X-Applet-Token
 请求头：admin.shunyi.wenming.city
 变量：export SYCC = 'XXXXXX'
